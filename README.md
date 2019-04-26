@@ -56,3 +56,9 @@ pymysql.install_as_MySQLdb()
 ## 运行
     python manage.py runserver
 
+## 项目展示
+![](https://github.com/xiaojie0202/BookShop/blob/master/media/%E4%B8%BB%E9%A1%B5.png)
+![](https://github.com/xiaojie0202/BookShop/blob/master/media/%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83.png)
+![](https://github.com/xiaojie0202/BookShop/blob/master/media/%E4%B9%A6%E7%B1%8D%E8%AF%A6%E6%83%85%E9%A1%B5.png)
+![](https://github.com/xiaojie0202/BookShop/blob/master/media/%E8%AE%A2%E5%8D%95%E9%A1%B5%E9%9D%A2.png)
+![](https://github.com/xiaojie0202/BookShop/blob/master/media/%E8%B4%AD%E7%89%A9%E8%BD%A6%E9%A1%B5.png)
