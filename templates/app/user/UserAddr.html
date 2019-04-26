@@ -1,0 +1,81 @@
+{% extends 'app/user/base_user.html' %}
+{% block meta %}{% endblock %}
+{% block title %}书籍屋-收货地址{% endblock title %}
+{% block style %}{% endblock style %}
+
+{% block user_title %}地址管理{% endblock user_title %}
+{% block contenr %}
+    <div class="main_con clearfix">
+        <div class="left_menu_con clearfix">
+            <h3>用户中心</h3>
+            <ul>
+                <li><a href="{% url 'home:user_info' %}">· 个人信息</a></li>
+                <li><a href="{% url 'home:user_order' %}">· 全部订单</a></li>
+                <li><a href="{% url 'home:user_addr' %}" class="active">· 收货地址</a></li>
+            </ul>
+        </div>
+        <div class="right_content clearfix">
+            <h3 class="common_title2">收货地址</h3>
+            <div class="site_con">
+                <dl>
+                    {% for addr in addr_obj %}
+                        <dd>
+                            {{ addr.addr }} （{{ addr.receiver }} 收） {{ addr.phone }}
+
+                            {% if not addr.is_default %}
+                                <button onclick="serDefaultAddress({{ addr.id }})">设为默认</button>
+                            {% else %}
+                                <span style="color: #0E90D2">默认地址</span>
+                            {% endif %}
+                        </dd>
+                    {% endfor %}
+                </dl>
+            </div>
+            <h3 class="common_title2">编辑地址</h3>
+            <div class="site_con">
+                <form method="post">
+                    <div class="form_group">
+                        <label>收件人：</label>
+                        <input type="text" name="receiver" required>
+                    </div>
+                    <div class="form_group form_group2">
+                        <label>详细地址：</label>
+                        <textarea class="site_area" name="addr" required></textarea>
+                    </div>
+                    <div class="form_group">
+                        <label>邮编：</label>
+                        <input type="text" name="zip_code" required>
+                    </div>
+                    <div class="form_group">
+                        <label>手机：</label>
+                        <input type="text" name="phone" required>
+                    </div>
+
+                    <input type="submit" value="提交" class="info_submit">
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock contenr %}
+
+
+{% block script %}
+        <script>
+        function serDefaultAddress(addrID) {
+            $.ajax(
+                {
+                    url: '/set_default_addr',
+                    type: 'POST',
+                    data: {addrID: addrID},
+                    dataType: 'JSON',
+                    success: function (data) {
+                        if (data.status) {
+                            window.location.reload()
+                        }
+                    }
+                }
+            )
+        }
+    </script>
+{% endblock script %}

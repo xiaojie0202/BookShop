@@ -1,0 +1,151 @@
+{% extends 'app/user/base_user.html' %}
+{% load tags %}
+{% block meta %}{% endblock %}
+{% block title %}书籍屋-购物车{% endblock title %}
+{% block style %}{% endblock style %}
+
+{% block user_title %}购物车{% endblock user_title %}
+{% block contenr %}
+    <div class="total_count">全部商品<em>{{ shop_cart_obj.count }}</em>件</div>
+    <ul class="cart_list_th clearfix">
+        <li class="col01">商品名称</li>
+        <li class="col02">商品单位</li>
+        <li class="col03">商品价格</li>
+        <li class="col04">数量</li>
+        <li class="col05">小计</li>
+        <li class="col06">操作</li>
+    </ul>
+    {% for car in shop_cart_obj %}
+        <ul class="cart_list_td clearfix" id="car_goods_list_{{ car.id }}">
+            <li class="col01">
+                <input type="checkbox" value="{{ car.id }}" class="select_shop">
+                <input type="hidden" value="{{ car.good.id }}" id="good_{{ car.id }}">
+            </li>
+            <li class="col02"><img src="/media/{{ car.good.image }}"></li>
+            <li class="col03">{{ car.good.name }}<br><em>{{ car.good.price }}元/{{ car.good.unite }}</em></li>
+            <li class="col04">{{ car.good.unite }}</li>
+            <li class="col05">{{ car.good.price }}元</li>
+            <li class="col06">
+                <div class="num_add">
+                    <a href="javascript:;" class="add fl"></a>
+                    <input type="text" class="num_show fl" value="{{ car.good_count }}" id="count_{{ car.id }}"
+                           disabled>
+                    <a href="javascript:;" class="minus fl"></a>
+                </div>
+            </li>
+            <li class="col07"><em id="shop_price_{{ car.id }}">{% chengfa car.good.price car.good_count %}</em>元</li>
+            <li class="col08"><a href="javascript:;" onclick="removeCarGoods({{ car.id }})">删除</a></li>
+        </ul>
+    {% endfor %}
+    <ul class="settlements">
+        <li class="col01"><input type="checkbox" name="" id="select_all"></li>
+        <li class="col02">全选</li>
+        <li class="col03">合计(不含运费)：<span>¥</span><em id="all_price">0</em><br>共计<b id="shop_count">0</b>件商品</li>
+        <li class="col04"><a onclick="createOrder()">去结算</a></li>
+    </ul>
+{% endblock contenr %}
+
+
+{% block script %}
+    <script>
+        var selectShop = [];
+        $(function () {
+
+            // 购物车商品单选事件
+            $('.select_shop').click(function () {
+                if ($(this).is(':checked')) {
+                    var th_id = parseInt($(this).val());
+
+                    if (selectShop.indexOf(th_id) === -1) {
+                        selectShop.push(th_id);
+                        $(this).prop('checked', true).parent().parent().addClass('shop_active');
+                        var th_price = parseFloat($('#shop_price_' + th_id).html()) //当前商品总价
+                        var all_price = parseFloat($('#all_price').html())
+                        $('#all_price').html(all_price + th_price)
+                    }
+
+                } else {
+                    selectShop.remove(parseInt($(this).val()));
+                    var th_id = parseInt($(this).val());
+
+                    $(this).prop('checked', false).parent().parent().removeClass('shop_active');
+                    var th_price = parseFloat($('#shop_price_' + th_id).html()) //当前商品总价
+                    var all_price = parseFloat($('#all_price').html())
+
+                    var value = all_price - th_price;
+                    if (value <= 0) {
+                        $('#all_price').html(0)
+                    } else {
+                        $('#all_price').html(value.toFixed(2))
+                    }
+
+
+                }
+                $('#shop_count').html(selectShop.length)
+            });
+
+            // 选中全部商品按钮
+            $('#select_all').click(function () {
+                var selectIput = $('.select_shop');
+                if ($(this).is(':checked')) {
+                    selectIput.prop('checked', true);
+                    selectIput.parent().parent().addClass('shop_active');
+
+                    var price_all = 0.00;
+
+                    $.each(selectIput, function (index, tag) {
+                        var th_id = parseInt($(tag).val());
+
+                        var th_price = parseFloat($('#shop_price_' + th_id).html()) //当前商品总价
+
+                        price_all += th_price;
+
+                        if (selectShop.indexOf(th_id) === -1) {
+                            selectShop.push(th_id)
+                        }
+                    });
+
+                    $('#all_price').html(price_all.toFixed(2))
+                    console.log(selectShop)
+                } else {
+                    selectIput.prop('checked', false);
+                    selectIput.parent().parent().removeClass('shop_active');
+                    $.each(selectIput, function (index, tag) {
+                        selectShop.remove(parseInt($(tag).val()))
+                    })
+                    $('#all_price').html(0)
+                    console.log(selectShop)
+                }
+                $('#shop_count').html(selectShop.length)
+            });
+        });
+
+        function removeCarGoods(carID) {
+            $.ajax(
+                {
+                    url: '/remove_cart',
+                    type: 'POST',
+                    data: {carID: carID},
+                    dataType: 'JSON',
+                    success: function (data) {
+                        if (data.status) {
+                            $('#car_goods_list_' + carID).remove()
+                        }
+                    }
+                }
+            );
+        }
+
+        //  去结算
+        function createOrder() {
+            if (selectShop.length > 0) {
+                var url = '/place_order?order=';
+                $.each(selectShop, function (index, carid) {
+                    url = url + $('#good_' + carid).val() + '-' + $('#count_' + carid).val() + ','
+                });
+                window.location = url
+            }
+        }
+
+    </script>
+{% endblock script %}

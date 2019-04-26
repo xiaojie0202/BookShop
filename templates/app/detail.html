@@ -1,0 +1,128 @@
+{% extends 'app/base_site.html' %}
+
+{% block meta %}{% endblock %}
+
+{% block title %}书籍屋-商品详情{% endblock title %}
+
+{% block style %}
+
+{% endblock style %}
+
+{% block contenr %}
+    <div class="breadcrumb">
+        <a href="#">商城</a>
+        <span>></span>
+        <a href="#">商品详情</a>
+    </div>
+
+    <div class="goods_detail_con clearfix">
+        <div class="goods_detail_pic fl"><img src="/media/{{ good_obj.image }}"></div>
+
+        <div class="goods_detail_list fr">
+            <h3>{{ good_obj.name }}</h3>
+            <p>{{ good_obj.desc }}</p>
+            <div class="prize_bar">
+                <span class="show_pirze">¥<em>{{ good_obj.price }}</em></span>
+                <span class="show_unit">单  位：{{ good_obj.unite }}</span>
+            </div>
+            <div class="goods_num clearfix">
+                <div class="num_name fl">数 量：</div>
+                <div class="num_add fl">
+                    <input type="text" class="num_show fl" value="1" onchange="changeGoodCount()" id="good_count">
+                    <a class="add fr" onclick="addGoodCount()">+</a>
+                    <a class="minus fr" onclick="subGoodCount()">-</a>
+                </div>
+            </div>
+            {#            <div class="total">总价：<em>{{ good_obj.price }}元</em></div>#}
+            <div class="operate_btn">
+                <a href="javascript:;" class="buy_btn" onclick="submitOrder({{ good_obj.id }})">立即购买</a>
+                <a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main_wrap clearfix">
+        <div class="r_wrap fr clearfix">
+            <ul class="detail_tab clearfix">
+                <li class="active">商品介绍</li>
+            </ul>
+
+            <div class="tab_content">
+                {{ good_obj.detail|safe }}
+            </div>
+
+        </div>
+    </div>
+
+
+{% endblock contenr %}
+
+{% block script %}
+    <div class="add_jump"></div>
+    <script type="text/javascript">
+        var good_count = 1;  // 商品数量
+
+        var $add_x = $('#add_cart').offset().top;
+        var $add_y = $('#add_cart').offset().left;
+
+        var $to_x = $('#show_count').offset().top;
+        var $to_y = $('#show_count').offset().left;
+
+
+        $(".add_jump").css({'left': $add_y + 80, 'top': $add_x + 10, 'display': 'block'});
+        $('#add_cart').click(function () {
+            {% if request.user.is_authenticated %}
+                $.ajax({
+                    url: '/add_cart',
+                    type: 'POST',
+                    data: {GoodID: {{ good_obj.id }}, GoodCount: good_count},
+                    dataType: 'JSON',
+                    success: function (data) {
+                        if (data.status) {
+                            $(".add_jump").stop().animate({
+                                    'left': $to_y + 7,
+                                    'top': $to_x + 7
+                                },
+                                "fast", function () {
+                                    $(".add_jump").fadeOut('fast', function () {
+                                        if (data.new) {
+                                            var cc = parseInt($('#show_count').html());
+                                            $('#show_count').html(cc + 1)
+                                        }
+
+                                    });
+
+                                });
+                        }
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert('服务器出错')
+                    }
+                });
+            {% else %}
+                window.location.href = '/login?next=/detail/{{ good_obj.id }}';
+            {% endif %}
+        });
+
+        function addGoodCount() {
+            good_count += 1;
+            $('#good_count').val(good_count)
+        }
+
+        function subGoodCount() {
+            if (good_count === 1) return
+            good_count -= 1;
+            $('#good_count').val(good_count)
+        }
+
+        function changeGoodCount() {
+            good_count = Number($('#good_count').val())
+        }
+
+        function submitOrder(goodID) {
+            window.location = '/place_order?order=' + goodID + '-' + good_count
+        }
+
+    </script>
+{% endblock script %}

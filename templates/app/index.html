@@ -1,0 +1,82 @@
+{% extends 'app/base_site.html' %}
+
+{% block meta %}{% endblock %}
+
+{% block title %}书籍屋-首页{% endblock title %}
+
+{% block style %}
+
+{% endblock style %}
+
+{% block contenr %}
+    <div class="center_con clearfix">
+        <div class="slide fl">
+            <ul class="slide_pics">
+                <li><img src="/static/images/slide.png" alt="幻灯片"></li>
+                <li><img src="/static/images/slide02.png" alt="幻灯片"></li>
+                <li><img src="/static/images/slide03.png" alt="幻灯片"></li>
+            </ul>
+            <div class="prev"></div>
+            <div class="next"></div>
+            <ul class="points"></ul>
+        </div>
+
+    </div>
+
+    <div class="list_model">
+        <div class="list_title clearfix">
+            <h3 class="fl" id="model01">最火书籍</h3>
+            <a href="#" class="goods_more fr" id="fruit_more">查看更多 ></a>
+        </div>
+
+        <div class="goods_con clearfix">
+            <ul class="goods_list fl">
+                {% for book in hot_book_obj %}
+                    <li>
+                        <h4><a href="{% url 'home:detail' book.id %}">{{ book.name }}</a></h4>
+                        <a href="{% url 'home:detail' book.id %}"><img src="/media/{{ book.image }}"></a>
+                        <div class="prize">¥ {{ book.price }}</div>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="list_model">
+        <div class="list_title clearfix">
+            <h3 class="fl" id="model02">最新书籍</h3>
+        </div>
+
+        <div class="goods_con clearfix">
+            <ul class="goods_list fl">
+                {% for book in new_book_obj %}
+                    <li>
+                        <h4><a href="{% url 'home:detail' book.id %}">{{ book.name }}</a></h4>
+                        <a href="{% url 'home:detail' book.id %}"><img src="/media/{{ book.image }}"></a>
+                        <div class="prize">¥ {{ book.price }}</div>
+                    </li>
+                {% endfor %}
+
+            </ul>
+        </div>
+    </div>
+{% endblock contenr %}
+
+{% block script %}
+    <script type="text/javascript">
+        BCSlideshow('focuspic');
+        var oFruit = document.getElementById('fruit_more');
+        var oShownum = document.getElementById('show_count');
+
+        var hasorder = localStorage.getItem('order_finish');
+
+        if (hasorder) {
+            oShownum.innerHTML = '2';
+        }
+
+        oFruit.onclick = function () {
+            window.location.href = 'list.html';
+        }
+    </script>
+{% endblock script %}

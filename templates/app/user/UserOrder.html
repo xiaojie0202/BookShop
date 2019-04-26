@@ -1,0 +1,140 @@
+{% extends 'app/user/base_user.html' %}
+{% block meta %}{% endblock %}
+{% block title %}书籍屋-我的订单{% endblock title %}
+{% block style %}
+    <style>
+        .order_list_th .col02 {
+            width: 33%!important;
+        }
+    </style>
+{% endblock style %}
+
+{% block user_title %}个人订单{% endblock user_title %}
+{% block contenr %}
+    <div class="main_con clearfix">
+        <div class="left_menu_con clearfix">
+            <h3>用户中心</h3>
+            <ul>
+                <li><a href="{% url 'home:user_info' %}">· 个人信息</a></li>
+                <li><a href="{% url 'home:user_order' %}" class="active">· 全部订单</a></li>
+                <li><a href="{% url 'home:user_addr' %}">· 收货地址</a></li>
+            </ul>
+        </div>
+        <div class="right_content clearfix">
+            <h3 class="common_title2">全部订单</h3>
+            {% for order in order_obj %}
+                <ul class="order_list_th w978 clearfix">
+                    <li class="col01">{{ order.create_datetime|date:"Y-m-d H:i:s" }}</li>
+                    <li class="col02">订单号：{{ order.order_id }}</li>
+
+                    <li class="col02 stress">{{ order.get_order_status_display }}</li>
+                </ul>
+
+                <table class="order_list_table w980">
+                    <tbody>
+                    <tr>
+                        <td width="55%">
+                            {% for good in order.ordergoods_set.all %}
+                                <ul class="order_goods_list clearfix">
+                                    <li class="col01"><img src="/media/{{ good.sku.image }}"></li>
+                                    <li class="col02">{{ good.sku.name }}<em>{{ good.sku.price }}元/{{ good.sku.unite }}g</em>
+                                    </li>
+                                    <li class="col03">{{ good.count }}</li>
+                                    <li class="col04">{{ good.price }}元</li>
+                                </ul>
+                            {% endfor %}
+                        </td>
+                        <td width="15%">{{ order.total_price }}元</td>
+                        {% if order.order_status == 1 %}
+                            <td width="15%">待付款</td>
+                            <td width="15%"><a class="oper_btn" onclick="pay('{{ order.order_id }}')">去付款</a></td>
+                        {% elif order.order_status == 2 %}
+                            <td width="15%">待发货</td>
+                            <td width="15%"><a href="#" class="oper_btn">待发货</a></td>
+                        {% elif order.order_status == 3 %}
+                            <td width="15%">待收货</td>
+                            <td width="15%"><a href="#" class="oper_btn" onclick="receiving('{{ order.order_id }}')">确认收货</a>
+                            </td>
+                        {% elif order.order_status == 4 %}
+                            <td width="15%">已完成</td>
+                            <td width="15%">已完成</td>
+                        {% endif %}
+
+                    </tr>
+                    </tbody>
+                </table>
+            {% endfor %}
+
+
+            {#            <div class="pagenation">#}
+            {#                <a href="#">#}
+            {#                    <上一页#}
+            {#                </a>#}
+            {#                <a href="#" class="active">1</a>#}
+            {#                <a href="#">2</a>#}
+            {#                <a href="#">3</a>#}
+            {#                <a href="#">4</a>#}
+            {#                <a href="#">5</a>#}
+            {#                <a href="#">下一页></a>#}
+            {#            </div>#}
+        </div>
+    </div>
+    <div class="popup_con">
+        <div class="popup">
+            <p id="aaa">支付成功！</p>
+        </div>
+
+        <div class="mask"></div>
+    </div>
+{% endblock contenr %}
+
+
+{% block script %}
+    <script>
+        function pay(orderID) {
+            $.ajax({
+                url: '/pay',
+                type: 'post',
+                data: {orderID: orderID},
+                dataType: 'JSON',
+                success: function (data) {
+                    if (data.status) {
+                        $('.popup_con').fadeIn('fast', function () {
+                            $('#aaa').html('支付成功!');
+                            setTimeout(function () {
+                                $('.popup_con').fadeOut('fast', function () {
+                                    window.location.reload()
+                                });
+                            }, 3000)
+
+                        });
+                    }
+                }
+            })
+        }
+
+        function receiving(orderID) {
+            $.ajax({
+                url: '/receiving',
+                type: 'post',
+                data: {orderID: orderID},
+                dataType: 'JSON',
+                success: function (data) {
+                    if (data.status) {
+                        $('.popup_con').fadeIn('fast', function () {
+                            $('#aaa').html('确认收货完成!');
+                            setTimeout(function () {
+                                $('.popup_con').fadeOut('fast', function () {
+                                    window.location.reload()
+                                });
+                            }, 3000)
+
+                        });
+                    }
+                }
+            })
+        }
+
+
+    </script>
+{% endblock script %}

@@ -1,0 +1,82 @@
+{% extends 'app/base_site.html' %}
+{% load tags %}
+{% block meta %}{% endblock %}
+
+{% block title %}书籍屋-商城{% endblock title %}
+
+{% block style %}
+
+{% endblock style %}
+
+{% block contenr %}
+    <div style="height: 20px"></div>
+    <div class="main_wrap clearfix">
+        <div class="r_wrap fr clearfix">
+            <div class="sort_bar">
+                <a>类型</a>
+                <a {% if not request.GET.book_type %}
+                    class="active" {% endif %}href="?book_type{% filter_handel filter_dict 'book_type' %}">不限</a>
+                {% for v in book_type %}
+                    <a href="?book_type={{ v }}{% filter_handel filter_dict 'book_type' %}"
+                            {% if request.GET.book_type == v %} class="active" {% endif %} >{{ v }}</a>
+                {% endfor %}
+            </div>
+            <div class="sort_bar">
+                <a>出版社</a>
+                <a {% if not request.GET.publishing_house %}
+                    class="active" {% endif %}href="?publishing_house{% filter_handel filter_dict 'publishing_house' %}">不限</a>
+                {% for v in publishing_house %}
+                    <a href="?publishing_house={{ v }}{% filter_handel filter_dict 'publishing_house' %}"
+                            {% if request.GET.publishing_house == v %} class="active" {% endif %} >{{ v }}</a>
+                {% endfor %}
+            </div>
+
+            <ul class="goods_type_list clearfix">
+                {% for good in goods_obj %}
+                    <li>
+                        <a href="{% url 'home:detail' good.id %}"><img src="/media/{{ good.image }}"></a>
+                        <h4><a href="{% url 'home:detail' good.id %}">{{ good.name }}</a></h4>
+                        <div class="operate">
+                            <span class="prize">￥{{ good.price }}</span>
+                            <span class="unit">{{ good.price }}/{{ good.unite }}</span>
+{#                            <a href="#" class="add_goods" title="加入购物车"></a>#}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="pagenation">
+                {% if goods_obj.paginator.num_pages > 1 %}
+                    {% if goods_obj.has_previous %}
+                        <a href="?page={{ goods_obj.previous_page_number }}{% filter_handel filter_dict 'a' %}">
+                            上一页
+                        </a>
+                    {% else %}
+                        <a>
+                            上一页
+                        </a>
+                    {% endif %}
+
+                    {% for i in goods_obj.paginator.pager_num_range %}
+                        {% if i == goods_obj.number %}
+                            <a href="?page={{ i }}{% filter_handel filter_dict 'a' %}" class="active">{{ i }}</a>
+                        {% else %}
+                            <a href="?page={{ i }}{% filter_handel filter_dict 'a' %}">{{ i }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if goods_obj.has_next %}
+
+                        <a href="?page={{ goods_obj.next_page_number }}{% filter_handel filter_dict 'a' %}">下一页></a>
+
+                    {% else %}
+                        <a>下一页></a>
+                    {% endif %}
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock contenr %}
+
+{% block script %}{% endblock script %}

@@ -1,0 +1,25 @@
+{% extends 'app/base_site.html' %}
+{% block meta %}{% endblock %}
+{% block title %}{% endblock title %}
+{% block style %}{% endblock style %}
+
+
+{% block user_base %}
+
+    <div class="search_bar clearfix">
+        <a href="/" class="logo fl"><img src="/static/images/logo.png"></a>
+        <div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;{% block user_title %}{% endblock user_title %}</div>
+        <div class="search_con fr">
+            <form method="get" action="{% url 'home:shop' %}">
+                <input type="text" class="input_text fl" name="search" placeholder="搜索商品"
+                       value="{{ request.GET.search }}">
+                <input type="submit" class="input_btn fr" name="" value="搜索">
+            </form>
+        </div>
+    </div>
+
+    {% block contenr %}{% endblock contenr %}
+{% endblock user_base %}
+
+
+{% block script %}{% endblock script %}

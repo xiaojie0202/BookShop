@@ -1,0 +1,137 @@
+{% extends 'app/user/base_user.html' %}
+{% block meta %}{% endblock %}
+{% block title %}书籍屋-个人中心{% endblock title %}
+{% block style %}
+
+{% endblock style %}
+
+{% block user_title %}用户中心{% endblock user_title %}
+{% block contenr %}
+    <div class="main_con clearfix">
+        <div class="left_menu_con clearfix">
+            <h3>用户中心</h3>
+            <ul>
+                <li><a href="{% url 'home:user_info' %}" class="active">· 个人信息</a></li>
+                <li><a href="{% url 'home:user_order' %}">· 全部订单</a></li>
+                <li><a href="{% url 'home:user_addr' %}">· 收货地址</a></li>
+            </ul>
+        </div>
+        <div class="right_content clearfix">
+            <div class="info_con clearfix">
+                <h3 class="common_title2">基本信息</h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="user_info_list">
+                            <li><span>用户名：</span>{{ request.user.username }}</li>
+                            <li><span>姓名：</span>{{ request.user.first_name }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <div style="height: 40px"></div>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">修改信息
+                        </button>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <h3 class="common_title2">最近浏览</h3>
+            <div class="has_view_list">
+                <ul class="goods_type_list clearfix">
+                    {% for his in history_obj %}
+                        <li>
+                            <a href="../detail.html"><img src="/media/{{ his.good.image }}"></a>
+                            <h4><a href="../detail.html">{{ his.good.name }}</a></h4>
+                            <div class="operate">
+                                <span class="prize">￥{{ his.good.price }}</span>
+                                <span class="unit">{{ his.good.price }}/{{ his.good.unite }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">修改信息</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" id="update_userinfo">
+                        <div class="form-group">
+                            <label for="first_name" class="col-sm-2 control-label">姓名</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="first_name" name="first_name" placeholder="姓名" value="{{ request.user.first_name }}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="oldpassword" class="col-sm-2 control-label">旧密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="oldpassword" name="oldpassword" placeholder="旧密码">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newpassword1" class="col-sm-2 control-label">新密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="newpassword1" placeholder="新密码" name="newpassword1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="newpassword2" class="col-sm-2 control-label">确认密码</label>
+                            <div class="col-sm-10">
+                                <input type="password" class="form-control" id="newpassword2" placeholder="新密码" name="newpassword2">
+                            </div>
+                        </div>
+                        <p id="erro" style="color: red"></p>
+                    </form>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="updateUserInfo()">提交</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contenr %}
+
+
+{% block script %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <script>
+        function updateUserInfo() {
+            $.ajax({
+                url:'/UserInfo',
+                type: 'post',
+                data: $('#update_userinfo').serialize(),
+                dataType:'JSON',
+                success:function (data) {
+                    console.log(data)
+                    if(data.status){
+                        window.location.reload()
+                    }else{
+                        $('#erro').html(data.erro)
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock script %}

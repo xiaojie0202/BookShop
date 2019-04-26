@@ -1,0 +1,63 @@
+{% extends 'app/base_site.html' %}
+{% block meta %}{% endblock %}
+{% block title %}书籍屋-注册{% endblock title %}
+{% block style %}{% endblock style %}
+
+{% block exclude_footer %}
+    <div class="register_con">
+        <div class="l_con fl">
+            <a class="reg_logo"><img src="/static/images/logo02.png"></a>
+            <div class="reg_slogan">读万卷书 · 行万里路</div>
+            <div class="reg_banner"></div>
+        </div>
+
+        <div class="r_con fr">
+            <div class="reg_title clearfix">
+                <h1>用户注册</h1>
+                <a href="{% url 'home:login' %}">登录</a>
+            </div>
+            <div class="reg_form clearfix">
+                <form id="reg_form" method="post">
+                    <ul>
+                        <li>
+                            <label>用户名:</label>
+                            <input type="text" name="username" id="user_name" required>
+                            <span class="error_tip">提示信息</span>
+                        </li>
+                        <li>
+                            <label>密码:</label>
+                            <input type="password" name="password1" id="pwd" required>
+                            <span class="error_tip">提示信息</span>
+                        </li>
+                        <li>
+                            <label>确认密码:</label>
+                            <input type="password" name="password2" id="cpwd" required>
+                            <span class="error_tip">提示信息</span>
+                        </li>
+                        <li>
+                            <label>姓名:</label>
+                            <input type="text" name="first_name" id="email" required>
+                            <span class="error_tip">提示信息</span>
+                        </li>
+                        <li class="agreement">
+                            <input type="checkbox" name="allow" id="allow" checked="checked">
+                            <label>同意”书籍屋用户使用协议“</label>
+                            <span class="error_tip2">提示信息</span>
+                        </li>
+                        <li class="reg_sub">
+                            <input type="submit" value="注 册" name="">
+                        </li>
+                    </ul>
+                </form>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock exclude_footer %}
+
+
+{% block script %}
+    	<script type="text/javascript" src="/static/js/register.js"></script>
+{% endblock script %}
